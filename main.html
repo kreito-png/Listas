@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista com Três Colunas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #2a2a2a;
+            border-radius: 10px;
+            padding: 30px;
+            border: 1px solid #404040;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ffffff;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        .input-section {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .input-group {
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #cccccc;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #555;
+            border-radius: 5px;
+            background: #333;
+            color: #e0e0e0;
+            font-size: 16px;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        button {
+            padding: 10px 15px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        .remove-btn {
+            background: #f44336;
+            padding: 5px 10px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .remove-btn:hover {
+            background: #da190b;
+        }
+
+        .lists-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .list-column {
+            background: #333;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #555;
+        }
+
+        .list-column h3 {
+            color: #ffffff;
+            margin-bottom: 15px;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #4CAF50;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            background: #404040;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .item-number {
+            background: #4CAF50;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .item-text {
+            flex: 1;
+            color: #e0e0e0;
+        }
+
+        @media (max-width: 768px) {
+            .input-section {
+                flex-direction: column;
+            }
+            
+            .input-group {
+                min-width: 100%;
+            }
+            
+            .lists-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Minhas Listas</h1>
+        
+        <div class="input-section">
+            <div class="input-group">
+                <label for="itemInput1">Lista 1:</label>
+                <div class="input-row">
+                    <input type="text" id="itemInput1" placeholder="Digite um item para a Lista 1">
+                    <button onclick="adicionarItem(1)">Adicionar</button>
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label for="itemInput2">Lista 2:</label>
+                <div class="input-row">
+                    <input type="text" id="itemInput2" placeholder="Digite um item para a Lista 2">
+                    <button onclick="adicionarItem(2)">Adicionar</button>
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label for="itemInput3">Lista 3:</label>
+                <div class="input-row">
+                    <input type="text" id="itemInput3" placeholder="Digite um item para a Lista 3">
+                    <button onclick="adicionarItem(3)">Adicionar</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="lists-container">
+            <div class="list-column">
+                <h3>Lista 1</h3>
+                <ul id="lista1"></ul>
+            </div>
+            
+            <div class="list-column">
+                <h3>Lista 2</h3>
+                <ul id="lista2"></ul>
+            </div>
+            
+            <div class="list-column">
+                <h3>Lista 3</h3>
+                <ul id="lista3"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Inicializar listas vazias ou carregar do localStorage
+        let listas = {
+            1: [],
+            2: [],
+            3: []
+        };
+
+        // Carregar dados do localStorage ao iniciar
+        function carregarDados() {
+            const dadosSalvos = localStorage.getItem('minhasListas');
+            if (dadosSalvos) {
+                try {
+                    listas = JSON.parse(dadosSalvos);
+                    // Atualizar todas as listas na tela
+                    for (let i = 1; i <= 3; i++) {
+                        atualizarLista(i);
+                    }
+                } catch (e) {
+                    console.error('Erro ao carregar dados:', e);
+                }
+            }
+        }
+
+        // Salvar dados no localStorage
+        function salvarDados() {
+            try {
+                localStorage.setItem('minhasListas', JSON.stringify(listas));
+            } catch (e) {
+                console.error('Erro ao salvar dados:', e);
+            }
+        }
+
+        function adicionarItem(listaNumero) {
+            const item = document.getElementById('itemInput' + listaNumero).value.trim();
+            if (item) {
+                listas[listaNumero].push(item);
+                atualizarLista(listaNumero);
+                salvarDados(); // Salvar após adicionar
+                document.getElementById('itemInput' + listaNumero).value = '';
+            }
+        }
+
+        function atualizarLista(n) {
+            const ul = document.getElementById('lista' + n);
+            ul.innerHTML = '';
+            listas[n].forEach((item, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span class="item-number">${index + 1}</span>
+                    <span class="item-text">${item}</span>
+                    <button class="remove-btn" onclick="removerItem(${n}, ${index})">Remover</button>
+                `;
+                ul.appendChild(li);
+            });
+        }
+
+        function removerItem(listaNumero, index) {
+            listas[listaNumero].splice(index, 1);
+            atualizarLista(listaNumero);
+            salvarDados(); // Salvar após remover
+        }
+
+        // Adicionar evento Enter para todos os inputs
+        document.querySelectorAll('input[type="text"]').forEach((input, index) => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    adicionarItem(index + 1);
+                }
+            });
+        });
+
+        // Carregar dados quando a página for carregada
+        window.addEventListener('load', carregarDados);
+    </script>
+</body>
+</html>
